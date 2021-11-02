@@ -10,20 +10,49 @@ class TestConverter(unittest.TestCase):
     def test_parse_args(self):
 
         default_output_path = "out.csv"
+        default_timestamp_titles = ["ts", "submit_time"]
         input_args_list = [
+            ["converter.py", "in.txt"], 
             ["converter.py", "in.txt", "--output-path", default_output_path], 
             ["converter.py", "in.txt", "-o", default_output_path], 
-            ["converter.py", "in.txt", "--output-path", "output.csv"], 
             ["converter.py", "in.txt", "-o", "output.csv"], 
-            ["converter.py", "in.txt"]
+            ["converter.py", "in.txt", "--timestamp-titles"] + default_timestamp_titles, 
+            ["converter.py", "in.txt", "-t"] + default_timestamp_titles, 
+            ["converter.py", "in.txt", "-t"], 
+            ["converter.py", "in.txt", "-t", "t1"], 
+            ["converter.py", "in.txt", "-t", "t1", "t2"], 
+            ["converter.py", "in.txt", "-o", default_output_path, "-t"] + default_timestamp_titles, 
+            ["converter.py", "in.txt", "-o", default_output_path, "-t"], 
+            ["converter.py", "in.txt", "-o", default_output_path, "-t", "t1"], 
+            ["converter.py", "in.txt", "-o", default_output_path, "-t", "t1", "t2"], 
+            ["converter.py", "in.txt", "-t"] + default_timestamp_titles + ["-o", default_output_path], 
+            ["converter.py", "in.txt", "-t", "-o", default_output_path], 
+            ["converter.py", "in.txt", "-t", "t1", "-o", default_output_path], 
+            ["converter.py", "in.txt", "-t", "t1", "t2", "-o", default_output_path]
         ]
 
         for input_args in input_args_list:
+
             with mock.patch("sys.argv", input_args):
                 ret = parse_args()
-            self.assertEqual(len(ret), 2)
+
+            self.assertEqual(len(ret), 3)
             self.assertEqual(ret[0], input_args[1])
-            self.assertEqual(ret[1], input_args[3] if len(input_args) > 2 else default_output_path)
+
+            output_path, timestamp_titles = default_output_path, default_timestamp_titles
+            is_output_path, is_timestamp_titles = False, False
+            for arg in input_args:
+                if arg == "--output-path" or arg == "-o":
+                    is_output_path, is_timestamp_titles = True, False
+                elif arg == "--timestamp-titles" or arg == "-t":
+                    is_output_path, is_timestamp_titles = False, True
+                    timestamp_titles = []
+                elif is_output_path:
+                    output_path = arg
+                elif is_timestamp_titles:
+                    timestamp_titles.append(arg)
+            self.assertEqual(ret[1], output_path)
+            self.assertEqual(ret[2], timestamp_titles)
     
     def test_read_input_file(self):
 

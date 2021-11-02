@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+from datetime import datetime
 
 class unity_analytics():
     """
@@ -18,6 +19,31 @@ class unity_analytics():
         
         self.__data = self.preprocess_input_txt(input_txt)
         self.__tbl = self.flatten_data(self.__data)
+
+    def convert_timestamp(self, titles):
+        """
+        Convert columns that are timestamp into date string
+        Input:
+            titles: List of titles, of str, that are timestamp
+        Output:
+            Convert timestamp columns into date string
+            Raise KeyError if title not found
+            Raise other exceptions, e.g. ValueError, if timestamp cannot be understood
+        Remark:
+
+        """
+
+        title_to_idx = dict((self.__tbl[0][i], i) for i in range(len(self.__tbl[0])))
+        column_to_convert = [title_to_idx[title] for title in titles]
+
+        for row in self.__tbl[1:]:
+            for i in column_to_convert:
+                t = row[i]
+                for c in range(3):
+                    if t <= 999999999999:
+                        break
+                    t /= 1000
+                row[i] = datetime.utcfromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S")
 
     def to_csv(self):
         """

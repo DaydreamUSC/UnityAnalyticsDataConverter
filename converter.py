@@ -8,18 +8,20 @@ def parse_args():
     """
     Parse the input arguments
     Output:
-        Return input_path, output_path
+        Return input_path, output_path, timestamp_titles
     """
 
     parser = argparse.ArgumentParser()
     parser.add_argument("input_path", type=str)
     parser.add_argument("--output-path", "-o", type=str, default="out.csv")
+    parser.add_argument("--timestamp-titles", "-t", nargs="*", type=str, default=["ts", "submit_time"])
     args = parser.parse_args()
 
     input_path = args.input_path
     output_path = args.output_path
+    timestamp_titles = args.timestamp_titles
 
-    return input_path, output_path
+    return input_path, output_path, timestamp_titles
 
 def read_input_file(input_path):
     """
@@ -49,6 +51,8 @@ def write_output_file(output_path, txt):
 
 if __name__ == "__main__":
 
-    input_path, output_path = parse_args()
+    input_path, output_path, timestamp_titles = parse_args()
+
     analytic = unity_analytics(read_input_file(input_path))
+    analytic.convert_timestamp(timestamp_titles)
     write_output_file(output_path, analytic.to_csv())
