@@ -28,8 +28,8 @@ class TestUnityAnalytics(unittest.TestCase):
 
         input_list = [
             (
-                [["n1", "n2", "n3"], ["v1", None, True, False, 1, 1.1]], 
-                "\"n1\",\"n2\",\"n3\"\r\n\"v1\",\"\",\"True\",\"False\",\"1\",\"1.1\"\r\n"
+                [["n1", "n2", "n3", "n4", "n5", "n6"], ["v1", None, True, False, 1, 1.1]], 
+                "\"n1\",\"n2\",\"n3\",\"n4\",\"n5\",\"n6\"\r\n\"v1\",\"\",\"True\",\"False\",\"1\",\"1.1\"\r\n"
             )
         ]
 
